@@ -1,0 +1,18 @@
+
+.pageHeading{
+  margin-top: 50px;
+  text-align: center;
+}
+
+.navbar-nav{
+  margin-left: auto;
+  margin-right: auto;
+
+  .nav-item{
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
