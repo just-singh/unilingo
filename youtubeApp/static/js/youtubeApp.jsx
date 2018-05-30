@@ -1,39 +1,161 @@
 var React = require('react')
 var ReactDOM = require('react-dom')
 var classNames = require('classnames');
-import { BarChart, Bar, XAxis, YAxis } from 'recharts';
-
+import {SimpleLineChart, SimplePieChart} from './graphs.jsx'
 
 class StatsView extends React.Component{
   constructor(props){
     super(props);
     this.state = {
-      data : [
-            {name: 'Page A', uv: 4000, pv: 2400, amt: 2400},
-            {name: 'Page B', uv: 3000, pv: 1398, amt: 2210},
-            {name: 'Page C', uv: 2000, pv: 9800, amt: 2290},
-            {name: 'Page D', uv: 2780, pv: 3908, amt: 2000},
-            {name: 'Page E', uv: 1890, pv: 4800, amt: 2181},
-            {name: 'Page F', uv: 2390, pv: 3800, amt: 2500},
-            {name: 'Page G', uv: 3490, pv: 4300, amt: 2100},
-      ],
     }
+
+    this.loadChannelStats = this.loadChannelStats.bind(this);
+    this.loadChannelStats(this.props.channelId);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    this.loadChannelStats(nextProps.channelId);
+  }
+
+  loadChannelStats(channelId){
+    $.ajax({
+      type : 'GET',
+      url : '/ajax/channel_stats/',
+      data: {
+        channel_id: channelId
+      },
+    }).then(function(data) {
+      if(!data){
+        alert("An error has occurred loading the channel data.")
+      } else{
+        console.log(data)
+        console.log(data.subscriberCount)
+
+        this.setState({data: data})
+      }
+    }.bind(this));
+
   }
 
   render() {
+    var LIKE_DISLIKE_COLORS = ['#0088FE', '#00C49F']
+    var COMMENT_VIEW_COLORS = ['#FFBB28', '#FF8042']
+
     return (
       <div>
-        <p> Statistics View</p>
-        <BarChart width={600} height={300} data={this.state.data}>
-          <XAxis dataKey="name"  />
-          <YAxis />
-          <Bar type="monotone" dataKey="uv" barSize={30} fill="#8884d8"
-            />
-        </BarChart>
+        { this.state.data &&
+          <React.Fragment>
+          <div className="container">
+            <div className="col-md-12">
+              <div className="row">
+                <div className="col-md-12">
+                  <img className="channelThumb" src={this.state.data.thumb}/>
+                  <h2 className="channelTitle">{this.state.data.title}</h2>
+                  <p className="channelDescription">
+                    {this.state.data.description}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="statsRow">
+            <div className="container">
+              <div className="row ">
+                <div className="col-md-12">
+                  <h3 className="statHeading"> This Channel Has</h3>
+                </div>
+              </div>
+              <div className="row">
+                <div className="col-md-3">
+                  <p className="statValue">{this.state.data.viewCount }</p>
+                  <p className="statType">
+                    {this.state.data.viewCount == 1 ? 'View' : 'Views'}</p>
+                </div>
+                <div className="col-md-3">
+                  <p className="statValue">{this.state.data.videoCount}</p>
+                  <p className="statType">
+                    {this.state.data.videoCount == 1 ? 'Video' : 'Videos'}</p>
+                </div>
+                <div className="col-md-3">
+                  <p className="statValue">{this.state.data.subscriberCount}
+                  </p>
+                  <p className="statType">
+                    {this.state.data.subscriberCount == 1 ?
+                      'Subscriber' : 'Subscribers'}</p>
+                </div>
+                <div className="col-md-3">
+                  <p className="statValue">{this.state.data.commentCount}</p>
+                  <p className="statType">
+                    {this.state.data.commentCount == 1 ? 'Comment' : 'Comments'}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          {(this.state.data.likeDislikeData ||
+            this.state.data.commentViewData ||
+            this.state.data.viewTimeData.length > 0) &&
+            <div className="container sectionPadding">
+              <div className="row">
+                {this.state.data.likeDislikeData &&
+                  <div className="col-md-6">
+                    <h3 className="ratioHeading">Like to Dislike Ratio</h3>
+                    <SimplePieChart data={this.state.data.likeDislikeData}
+                      colors={LIKE_DISLIKE_COLORS}/>
+                  </div>
+                }
+                {this.state.data.commentViewData &&
+                  <div className="col-md-6">
+                    <h3 className="ratioHeading">Comment to View Ratio</h3>
+                    <SimplePieChart data={this.state.data.commentViewData}
+                      colors={COMMENT_VIEW_COLORS}/>
+                  </div>
+                }
+              </div>
+              {this.state.data.viewTimeData.length > 0 &&
+                <div className="row viewTimePadding">
+                  <div className="col-md-12">
+                    <h3 className="ratioHeading">Views Over Time</h3>
+                    <SimpleLineChart data={this.state.data.viewTimeData}/>
+                  </div>
+                </div>
+              }
+            </div>
+          }
+          { this.state.data.commentList.length > 0 &&
+            <div className="statsRow sectionPadding">
+              <div className="container">
+                <div className="row ">
+                  <div className="col-md-12">
+                    <h3 className="commentHeading">Comments</h3>
+                    <p className="commentSubheading"><b>Note:</b> The channels
+                      provided for the demo didn't have any comments. I pulled
+                      these from a video on the English channel.</p>
+                      <ul>
+                        { this.state.data.commentList.map(
+                          function(comment, index){
+                          return (
+                            <li key={ index } className="comment">
+                              <img src={comment.thumb}
+                                className="commentThumb"/>
+                              <span className="commentUsername">{ comment.name }
+                              </span>
+                              <p>{comment.text}</p>
+                            </li>
+                          )})}
+                      </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          }
+          </React.Fragment>
+        }
       </div>
     )
   }
 }
+
 
 class UploadView extends React.Component{
   constructor(props){
@@ -132,11 +254,12 @@ class UploadView extends React.Component{
   }
 }
 
+
 class YoutubeApp extends React.Component{
   constructor(props){
     super(props);
     this.state = {
-      pageView: 'upload',
+      pageView: 'statsBrian',
     };
 
     this.changePageView = this.changePageView.bind(this);
@@ -147,42 +270,57 @@ class YoutubeApp extends React.Component{
   }
 
   render() {
-    var statsPage = 'stats';
-    var uploadPage = 'upload';
+
+    // In an actual larger program we'd want to get the available channels from
+    // the server. Given there are only two it seems like overkill currently,
+    // so I've just hardcoded them.
+    var STATS_PAGE_BRIAN = 'statsBrian';
+    var STATS_PAGE_HISTORIA = 'statsHistoria';
+    var UPLOAD_PAGE = 'upload';
+    var CHANNEL_ID_BRIAN = 'UC9hWF751ZD5Qsn0Ff-A_fMA'
+    var CHANNEL_ID_HISTORIA = 'UCTe4kaxOjgTg8Y3AOhyXfVA'
 
     var uploadClasses = classNames('nav-item', 'nav-link', {
-      'active' : this.state.pageView == uploadPage
+      'active' : this.state.pageView == UPLOAD_PAGE
     })
-    var statsClasses = classNames('nav-item', 'nav-link', {
-      'active' : this.state.pageView == statsPage
+    var statsBrianClasses = classNames('nav-item', 'nav-link', {
+      'active' : this.state.pageView == STATS_PAGE_BRIAN
+    })
+    var statsStepClasses = classNames('nav-item', 'nav-link', {
+      'active' : this.state.pageView == STATS_PAGE_HISTORIA
     })
 
     return (
 
       <div>
-        <h1 className="pageHeading">Unilingo Youtube App</h1>
-
-        <nav className="navbar navbar-expand-lg navbar-light bg-light">
+        <a className="pageHeading" href="/">unilingo</a>
+        <nav className="navbar navbar-expand-lg navbar-dark">
           <div className="collapse navbar-collapse" id="navbarNavAltMarkup">
             <div className="navbar-nav">
+              <a className={ statsBrianClasses } href="#"
+                onClick={(e)=> this.changePageView(STATS_PAGE_BRIAN)}>
+                  View Brian Makse Stats</a>
+              <a className={ statsStepClasses } href="#"
+                onClick={(e)=> this.changePageView(STATS_PAGE_HISTORIA)}>
+                View Step Back Historia Stats</a>
               <a className={ uploadClasses } href="#"
-                onClick={(e)=> this.changePageView(uploadPage)}>Upload Video
+                onClick={(e)=> this.changePageView(UPLOAD_PAGE)}>Upload Video
                 <span className="sr-only">(current)</span></a>
-              <a className={ statsClasses } href="#"
-                onClick={(e)=> this.changePageView(statsPage)}>View Statistics</a>
             </div>
           </div>
         </nav>
 
-        <div className="container">
-          <div className="col-md-12">
-            {this.state.pageView == 'upload' ?
+        {this.state.pageView == UPLOAD_PAGE ?
+          <div className="container">
+            <div className="col-md-12">
               <UploadView/>
-            :
-              <StatsView/>
-            }
+            </div>
           </div>
-        </div>
+        : this.state.pageView == STATS_PAGE_BRIAN ?
+          <StatsView channelId={CHANNEL_ID_BRIAN}/>
+        :
+          <StatsView channelId={CHANNEL_ID_HISTORIA}/>
+        }
       </div>
     )
   }

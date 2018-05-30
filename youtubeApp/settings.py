@@ -19,17 +19,26 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'y$3!dd%my!-^x+mj4yntw8q%=0-f3oexn=ezh(&wk2em^5h#(c'
+SECRET_KEY = os.environ['SECRET_KEY']
+CLIENT_SECRETS_FILE = os.path.join(BASE_DIR, '/secrets/client_id.json')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 ALLOWED_HOSTS = []
 
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+        'NAME': 'unilingo',
+        'USER': '',
+        'PASSWORD': '',
+        'HOST': '',                      # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
+        'PORT': '5432',                      # Set to empty string for default.
+    }
+}
 
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -127,3 +136,5 @@ WEBPACK_LOADER = {
         'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats.json'),
     }
 }
+
+GOOGLE_OAUTH2_CLIENT_SECRETS_JSON = 'secrets/client_id.json'

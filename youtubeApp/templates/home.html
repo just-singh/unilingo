@@ -1,25 +1,31 @@
 {% load static from staticfiles %}
+{% load i18n %}
 {% load render_bundle from webpack_loader %}
 
+{% get_current_language as LANGUAGE_CODE %}
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html ng-app="acmApp" >
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Unilingo Youtube App</title>
-    <link rel="shortcut icon" href="{% static 'img/favicon.ico' %}">
-    <link rel="stylesheet"
-      href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css"
-      integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4"
-      crossorigin="anonymous">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
-    {% render_bundle 'youtubeAppStyle' 'css' %}
+<title>{% block pageTitle %}{% endblock %}</title>
 
-  </head>
+{% block headerFiles %}
+	{% render_bundle 'youtubeAppStyle' 'css' %}
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
+	<link rel="shortcut icon" href="/static/img/favicon.ico">
+{% endblock %}
 
-  <body>
-    <div id="container">
+{% block headScript %}
 
-    </div>
-    {% render_bundle 'youtubeApp' 'js' %}
-  </body>
+{% endblock %}
+
+</head>
+
+<body>
+  <div id="container">
+
+  </div>
+  {% render_bundle 'youtubeApp' 'js' %}
+</body>
 </html>
