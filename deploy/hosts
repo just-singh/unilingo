@@ -1,0 +1,8 @@
+[webservers]
+ec2-34-218-252-98.us-west-2.compute.amazonaws.com
+
+[dbservers]
+
+[memcachedservers]
+
+[nodeservers]

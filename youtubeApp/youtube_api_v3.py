@@ -8,7 +8,7 @@ from googleapiclient.errors import HttpError
 from google_auth_oauthlib.flow import InstalledAppFlow, Flow
 
 from youtubeApp.models import ReportData
-from settings import CLIENT_SECRETS_FILE
+from youtubeApp.settings import CLIENT_SECRETS_FILE, REDIRECT_URI
 
 
 SCOPES = ['https://www.googleapis.com/auth/youtube.force-ssl']
@@ -17,8 +17,10 @@ API_VERSION = 'v3'
 _DEFAULT_AUTH_CODE_MESSAGE = ('Enter the authorization code: ')
 
 def get_authenticated_service():
-    flow = Flow.from_client_secrets_file(CLIENT_SECRETS_FILE, scopes=SCOPES, redirect_uri="http://127.0.0.1:8000/oauth2callback")
-    authorization_url, state = flow.authorization_url(access_type='offline', approval_prompt='force')
+    flow = Flow.from_client_secrets_file(CLIENT_SECRETS_FILE, scopes=SCOPES,
+        redirect_uri=REDIRECT_URI)
+    authorization_url, state = flow.authorization_url(access_type='offline',
+        approval_prompt='force')
     print authorization_url
     code = input(_DEFAULT_AUTH_CODE_MESSAGE)
     flow.fetch_token(code=code)
@@ -27,41 +29,6 @@ def get_authenticated_service():
 
 def print_response(response):
     print(response)
-
-# Build a resource based on a list of properties given as key-value pairs.
-# Leave properties with empty values out of the inserted resource.
-def build_resource(properties):
-    resource = {}
-    for p in properties:
-        # Given a key like "snippet.title", split into "snippet" and "title", where
-        # "snippet" will be an object and "title" will be a property in that object.
-        prop_array = p.split('.')
-        ref = resource
-        for pa in range(0, len(prop_array)):
-            is_array = False
-            key = prop_array[pa]
-
-            # For properties that have array values, convert a name like
-            # "snippet.tags[]" to snippet.tags, and set a flag to handle
-            # the value as an array.
-            if key[-2:] == '[]':
-                key = key[0:len(key)-2:]
-                is_array = True
-
-            if pa == (len(prop_array) - 1):
-
-                # Leave properties without values out of inserted resource.
-                if properties[p]:
-                    if is_array:
-                        ref[key] = properties[p].split(',')
-                    else:
-                        ref[key] = properties[p]
-            elif key not in ref:
-                ref[key] = {}
-                ref = ref[key]
-            else:
-                ref = ref[key]
-    return resource
 
 # Remove keyword arguments that are not set
 def remove_empty_kwargs(**kwargs):

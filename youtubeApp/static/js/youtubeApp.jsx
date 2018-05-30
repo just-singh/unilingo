@@ -174,20 +174,21 @@ class UploadView extends React.Component{
 
   handleSubmit(event) {
     event.preventDefault();
-    alert(
-      `Selected file - ${this.fileInput.files[0].name}`
-    );
 
     $.ajax({
       type : 'GET',
-      url : '/upload/ajax/',
+      url : '/ajax/upload_video/',
       data: {
+        'title': this.state.title,
+        'description': this.state.description,
+        'tags': this.state.tags
       },
+
     }).then(function(data) {
       if(!data){
         alert ("There's been an error uploading the video.")
       } else{
-        //this.setState({pageView: 'success'})
+        console.log("Ajax returned.")
       }
     }.bind(this));
 
@@ -206,13 +207,10 @@ class UploadView extends React.Component{
   render() {
     return (
       <form onSubmit={this.handleSubmit}>
-        <div className="form-group">
-          <label htmlFor="vidFile">Select a video to upload.</label>
-          <input name="vidFile" id="vidFile"
-            ref={input => {
-              this.fileInput = input;
-            }}
-            className="form-control-file" type="file"/>
+        <div className="form-group sectionPadding">
+          <h2 className="uploadHeader"> Currently this demo is hardcoded to use
+            a preset 5 second video (because the server is pretty weak).
+          </h2>
         </div>
 
         <div className="form-group">

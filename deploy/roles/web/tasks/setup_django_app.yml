@@ -1,0 +1,80 @@
+---
+
+- name: Install packages required by the Django app inside virtualenv
+  pip: virtualenv={{ virtualenv_path }} requirements={{ requirements_file }}
+  tags:
+    - requirements 
+
+- name: Run the Django syncdb command
+  sudo_user: "{{ application_user }}"
+  shell: . {{ virtualenv_path }}/bin/activate
+         && . {{ virtualenv_path }}/bin/postactivate
+         && cd {{ django_dir }}
+         && python manage.py syncdb --noinput --settings={{ django_settings_file }}
+  when: run_django_syncdb
+  tags: 
+    - django 
+    - syncdb
+
+- name: Run Django migrations
+  sudo_user: "{{ application_user }}"
+  shell: . {{ virtualenv_path }}/bin/activate
+         && . {{ virtualenv_path }}/bin/postactivate
+         && cd {{ django_dir }}
+         && python manage.py migrate --noinput --settings={{ django_settings_file }}
+  when: run_django_migrations
+  tags: 
+    - django 
+    - migrate
+
+- name: Load Auth User ACM Fixtures 
+  sudo_user: "{{ application_user }}"
+  shell: . {{ virtualenv_path }}/bin/activate
+         && . {{ virtualenv_path }}/bin/postactivate
+         && cd {{ django_dir }}
+         && python manage.py loaddata profiles/fixtures/users.json --settings={{ django_settings_file }}
+  when: run_django_fixtures
+  tags: 
+    - django 
+    - fixtures 
+
+- name: Load Profile ACM Fixtures 
+  sudo_user: "{{ application_user }}"
+  shell: . {{ virtualenv_path }}/bin/activate
+         && . {{ virtualenv_path }}/bin/postactivate
+         && cd {{ django_dir }}
+         && python manage.py loaddata profiles/fixtures/dev.json --settings={{ django_settings_file }}
+  when: run_django_fixtures
+  tags: 
+    - django 
+    - fixtures 
+
+- name: Load Ctc Services ACM Fixtures 
+  sudo_user: "{{ application_user }}"
+  shell: . {{ virtualenv_path }}/bin/activate
+         && . {{ virtualenv_path }}/bin/postactivate
+         && cd {{ django_dir }}
+         && python manage.py loaddata ctc_services/fixtures/dev.json --settings={{ django_settings_file }}
+  when: run_django_fixtures
+  tags: 
+    - django 
+    - fixtures 
+    
+- name: Webpack file processing
+  shell: . {{ virtualenv_path }}/bin/activate
+         && . {{ virtualenv_path }}/bin/postactivate
+         && cd {{ django_dir }}
+         && ./node_modules/.bin/webpack --config webpack.prod.config.js
+
+- name: Run Django collectstatic
+  shell: . {{ virtualenv_path }}/bin/activate
+         && . {{ virtualenv_path }}/bin/postactivate
+         && cd {{ django_dir }}
+         && python manage.py collectstatic --noinput --settings={{ django_settings_file }}
+  tags: 
+    - django 
+    - collectstatic 
+    - deploy
+
+
+

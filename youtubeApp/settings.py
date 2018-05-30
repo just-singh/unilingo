@@ -20,7 +20,12 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
 
 SECRET_KEY = os.environ['SECRET_KEY']
-CLIENT_SECRETS_FILE = os.path.join(BASE_DIR, '/secrets/client_id.json')
+
+# Youtube file for oauth2.
+CLIENT_SECRETS_FILE = os.path.join(BASE_DIR, 'secrets/client_id.json')
+
+# Youtube API redirect uri.
+REDIRECT_URI = "http://127.0.0.1:8000/oauth2callback"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -46,6 +51,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',
     'youtubeApp',
     'webpack_loader',
 
@@ -54,12 +60,21 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_ORIGIN_WHITELIST = (
+    'accounts.google.com',
+    'localhost:8000',
+    '127.0.0.1:8000'
+)
+CSRF_TRUSTED_ORIGINS = '*'
 
 ROOT_URLCONF = 'youtubeApp.urls'
 
@@ -136,5 +151,3 @@ WEBPACK_LOADER = {
         'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats.json'),
     }
 }
-
-GOOGLE_OAUTH2_CLIENT_SECRETS_JSON = 'secrets/client_id.json'

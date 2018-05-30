@@ -21,7 +21,8 @@ from youtubeApp.views import *
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^$', home_view, name="home"),
+    url(r'^authorize/$', authorize, name="authorize"),
     url(r'^oauth2callback$', oauth_callback_request, name="ouath_callback"),
     url(r'^ajax/channel_stats/$', channel_stats_ajax, name="channel_stats_ajax"),
-
+    url(r'^ajax/upload_video/$', upload_ajax, name="upload_ajax"),
 ]

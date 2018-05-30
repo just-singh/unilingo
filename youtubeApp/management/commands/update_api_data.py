@@ -3,6 +3,8 @@ from django.core.management.base import BaseCommand, CommandError
 from youtubeApp.youtube_api_v3 import update_v3_reports
 from youtubeApp.youtube_api_v2 import update_v2_reports
 
+# Accesses the youtube api to retrieve and store the required reports. We call
+# both a v3 and v2 file for version 3 and version 2 of the api respectively.
 class Command(BaseCommand):
     help = 'Gathers data from the specified channel, and video using' + \
         ' the youtube api.'

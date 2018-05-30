@@ -101,8 +101,8 @@ class Command(BaseCommand):
         }
 
         processed_data, created = ProcessedData.objects.get_or_create(
-          channel_id=channel_id,
-          data=json.dumps(channel_json))
-        processed_data.save()
+          channel_id=channel_id)
 
+        processed_data.data=json.dumps(channel_json)
+        processed_data.save()
         self.stdout.write(self.style.SUCCESS('Data formatting complete.'))

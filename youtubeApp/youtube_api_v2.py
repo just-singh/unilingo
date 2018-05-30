@@ -12,7 +12,7 @@ from googleapiclient.http import MediaIoBaseDownload
 from google_auth_oauthlib.flow import InstalledAppFlow
 
 from youtubeApp.models import ReportData
-from settings import CLIENT_SECRETS_FILE
+from youtubeApp.settings import CLIENT_SECRETS_FILE, REDIRECT_URI
 
 
 # This OAuth 2.0 access scope allows for read access to YouTube Analytics
@@ -32,9 +32,10 @@ _DEFAULT_AUTH_CODE_MESSAGE = (
 
 def get_service():
   flow = Flow.from_client_secrets_file(CLIENT_SECRETS_FILE,
-    scopes=SCOPES, redirect_uri="http://127.0.0.1:8000/oauth2callback")
+    scopes=SCOPES, redirect_uri=REDIRECT_URI)
 
-  authorization_url, state = flow.authorization_url(access_type='offline', approval_prompt='force')
+  authorization_url, state = flow.authorization_url(access_type='offline',
+    approval_prompt='force')
   print authorization_url
 
   code = input(_DEFAULT_AUTH_CODE_MESSAGE)

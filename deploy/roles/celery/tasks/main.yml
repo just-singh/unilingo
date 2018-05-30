@@ -1,0 +1,39 @@
+---
+- name: Ensure supervisor is running and enabled
+  service: name=supervisor state=started enabled=yes
+
+- name: Install Celery worker config
+  template: >
+    src=./roles/celery/templates/celery.conf.j2
+    dest=/etc/supervisor/conf.d/celery.conf
+    owner={{ application_user }}
+    group={{ application_group }}
+    mode=0644
+  notify: restart celery
+
+- name: Install Celery beat config
+  template: >
+    src=./roles/celery/templates/celerybeat.conf.j2
+    dest=/etc/supervisor/conf.d/celery-beat.conf
+    owner={{ application_user }}
+    group={{ application_group }}
+    mode=0644
+  notify: restart celery
+
+- name: Re-read the Supervisor config files
+  command: supervisorctl reread
+
+
+- name: Ensure supervisor has added app processes
+  supervisorctl: name={{ item }} state=present
+  with_items:
+  - "{{ application_name }}"
+  - "{{ celery_app_name }}"
+  - "{{ celery_beat_app_name }}"
+
+- name: Ensure supervisor has started app processes
+  supervisorctl: name={{ item }} state=started
+  with_items:
+  - "{{ application_name }}"
+  - "{{ celery_app_name }}"
+  - "{{ celery_beat_app_name }}"

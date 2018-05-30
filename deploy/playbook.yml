@@ -1,0 +1,112 @@
+---
+
+- name: Provision {{ application_name }} with Ansible
+  hosts: all
+  gather_facts: no
+  sudo: yes
+  sudo_user: root
+  remote_user: ec2-user 
+
+  vars:
+    #top level vars
+    - application_user: ec2-user
+    #for password, ie python -c "from passlib.hash import sha512_crypt; print sha512_crypt.encrypt('your-password')"
+    - application_user_password_hash: ''
+    - application_group: unilingo
+    - application_name: unilingo #  Has to be the name of your Django project.  Ie same name as the folder containing settings.py
+    - update_apt_cache: yes
+    - django_settings_module: youtubeApp.settings
+
+    #Postgresql
+    - db_name: unilingo
+    - postgresql_version: 9.3
+    #Web
+    - virtualenv_path: '/webapps/{{ application_name }}'
+    - virtualenv_python: '{{ virtualenv_path }}/bin/python'
+
+    - git_root: '{{ virtualenv_path }}/{{ application_name }}'
+    - django_dir: '{{ git_root }}' #  Location of manage.py
+    - application_log_dir: '{{ virtualenv_path }}/logs'
+    - requirements_file: '{{ git_root }}/requirements.txt'
+    #(Web) Gunicorn
+    - gunicorn_user: '{{ application_user }}'
+    - gunicorn_group: '{{ application_group }}'
+    - gunicorn_num_workers: 1
+    - gunicorn_max_requests: 0
+    #(Web) Django
+    - django_settings_file: '{{ application_name }}.settings'
+    - django_secret_key: ''
+    - run_django_syncdb: no
+    - run_django_migrations: yes
+    - run_django_collectstatic: yes
+    - run_django_fixtures: no
+
+    # Celery
+    - celery_time_limit: 1000
+    - celery_soft_time_limit: 1000
+    - celery_app_name: 'celery'
+    - celery_beat_app_name: 'celerybeat'
+
+    #(Web) Git
+    - setup_git_repo: yes
+    - git_repo: 'https://github.com/just-singh/unilingo.git'
+    #(Web) Nginx
+    - nginx_server_name: localhost
+    - nginx_http_port: 80
+    - nginx_https_port: 443
+    - nginx_access_log_file: "{{ application_log_dir }}/nginx/nginx_access.log"
+    - nginx_error_log_file: "{{ application_log_dir }}/nginx/nginx_error.log"
+    - nginx_static_dir: "{{ virtualenv_path }}/static/"
+    - nginx_media_dir: "{{ git_root }}/media/"
+    # Extras...
+    #Mysql
+    #- mysql_db_user:
+    #- mysql_db_name:
+    #- mysql_db_password:
+    #- mysql_port: 3306
+    #RDS
+    #- create_rds: yes
+    #- aws_zone: ''
+    #- aws_region: ''
+    #- rds_vpc_security_groups: ''
+    #- rds_subnet_group: ''
+    #- rds_port: ''
+    #- rds_instance: ''
+    #- rds_size: ''
+    #Mongo
+    #- mongo_db_name: ''
+    #- mongo_db_user: ''
+    #- mongo_db_group: ''
+    #- mongo_db_password: ''
+    #- mongo_db_host: ''
+    #- mongodb_package: ''
+    #Memcached
+    #- memcached_listen: 127.0.0.1
+    #- memcached_port: 11211
+    #- memcached_user: nobody
+    #- memcached_max_memory_mb: 64
+    #- memcached_max_connections: 1024
+    #Backup (rudimentary)
+    #- aws_access_key_id_for_backups: ''
+    #- aws_secret_access_key_for_backups: ''
+    #- aws_backup_tag: ''
+    #- ec2_region_endpoint: ''
+
+  #Good practice if you want to move vars from here..
+  #vars_files:
+  #  - vars/local
+  #  - vars/dev
+  #  - vars/production
+
+  roles:
+    - postgresql
+    - web
+    # - rabbitmq
+    #- memcached
+    #- backup
+    #- mysql
+    #- rds
+    #- nodejs
+    # - celery
+    #- mongo
+    #- es

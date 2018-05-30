@@ -1,0 +1,13 @@
+#!/bin/bash
+
+echo "Exporting Ansible specific variables"
+
+echo "Exporting environment variables for AWS"
+export AWS_KEY_PATH='/Users/DarkMetroid/unilingo.pem'
+echo "Exporting local database variables"
+export DB_NAME='unilingo'
+export DB_USER=''
+export DB_PASSWORD=''
+export DB_HOST=''
+export DB_PORT='5432'
+export SECRET_KEY='y$3!dd%my!-^x+mj4yntw8q%=0-f3oexn=ezh(&wk2em^5h#(c'
