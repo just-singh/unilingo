@@ -36,7 +36,7 @@ def get_service():
 
   authorization_url, state = flow.authorization_url(access_type='offline',
     approval_prompt='force')
-  print authorization_url
+  # print authorization_url
 
   code = input(_DEFAULT_AUTH_CODE_MESSAGE)
   flow.fetch_token(code=code)

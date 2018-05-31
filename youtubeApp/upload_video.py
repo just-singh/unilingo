@@ -28,13 +28,10 @@ def get_authenticated_service():
   #flow.redirect_uri = "http://127.0.0.1:8000/oauth2callback"
   authorization_url, state = flow.authorization_url(access_type='offline',
     approval_prompt='force')
-  print authorization_url
 
   code = input(_DEFAULT_AUTH_CODE_MESSAGE)
   flow.fetch_token(code=code)
   credentials = flow.credentials
-  print "CREDENTIALS"
-  print ""
   return build(API_SERVICE_NAME, API_VERSION, credentials = credentials)
 
 # Explicitly tell the underlying HTTP transport library not to retry, since
@@ -57,20 +54,15 @@ RETRIABLE_STATUS_CODES = [500, 502, 503, 504]
 # This method implements an exponential backoff strategy to resume a
 # failed upload.
 def resumable_upload(request, resource, method):
-  print request
-  print method
   response = None
   error = None
   retry = 0
   while response is None:
     try:
-      print "Uploading file..."
       status, response = request.next_chunk()
       if response is not None:
         if method == 'insert' and 'id' in response:
-          print(response)
         elif method != 'insert' or 'id' not in response:
-          print(response)
         else:
           exit("The upload failed with an unexpected response: %s" % response)
     except HttpError, e:
@@ -83,14 +75,12 @@ def resumable_upload(request, resource, method):
       error = "A retriable error occurred: %s" % e
 
     if error is not None:
-      print error
       retry += 1
       if retry > MAX_RETRIES:
         exit("No longer attempting to retry.")
 
       max_sleep = 2 ** retry
       sleep_seconds = random.random() * max_sleep
-      print "Sleeping %f seconds and then retrying..." % sleep_seconds
       time.sleep(sleep_seconds)
 
 def print_response(response):
