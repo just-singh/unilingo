@@ -30,7 +30,7 @@ REDIRECT_URI = "http://127.0.0.1:8000/oauth2callback"
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 DATABASES = {
     'default': {
