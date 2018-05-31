@@ -13,7 +13,8 @@ from googleapiclient.errors import HttpError
 from google_auth_oauthlib.flow import InstalledAppFlow
 from apiclient.http import MediaFileUpload
 
-from youtubeApp.settings import CLIENT_SECRETS_FILE, REDIRECT_URI
+from youtubeApp.settings import CLIENT_SECRETS_FILE, REDIRECT_URI, \
+    VIDEO_FILE_PATH
 
 
 SCOPES = ['https://www.googleapis.com/auth/youtube.force-ssl']
@@ -145,29 +146,33 @@ def videos_insert(client, properties, media_file, **kwargs):
   request = client.videos().insert(
     body=resource,
     media_body=MediaFileUpload(media_file, chunksize=-1,
-                               resumable=True),
+        resumable=True),
     **kwargs
   )
-
   return resumable_upload(request, 'video', 'insert')
 
 
-def upload_video(client):
+def upload_video(client, title, description, tags):
   os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
-  media_file = "/Users/justinsingh/Desktop/Videos/Mosaic/SmallClip.mov"
+  media_file = VIDEO_FILE_PATH
 
   if not os.path.exists(media_file):
     exit('Please specify a valid file location.')
 
+  # Currently the variable are hardcoded as they don't get passed through
+  title = "unilingo is pretttttyyy cool"
+  description = "Sooooo close to finishing on time >.>"
+  tags="bad programmer, no cookie, grrrrrrr"
+
   videos_insert(client,
     {'snippet.categoryId': '22',
      'snippet.defaultLanguage': '',
-     'snippet.description': 'Description of uploaded video.',
-     'snippet.tags[]': '',
-     'snippet.title': 'No copy attempt',
+     'snippet.description': description,
+     'snippet.tags[]': tags,
+     'snippet.title': title,
      'status.embeddable': '',
      'status.license': '',
-     'status.privacyStatus': 'private',
+     'status.privacyStatus': 'public',
      'status.publicStatsViewable': ''},
     media_file,
     part='snippet,status')

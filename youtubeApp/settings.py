@@ -23,6 +23,7 @@ SECRET_KEY = os.environ['SECRET_KEY']
 
 # Youtube file for oauth2.
 CLIENT_SECRETS_FILE = os.path.join(BASE_DIR, 'secrets/client_id.json')
+VIDEO_FILE_PATH = os.path.join(BASE_DIR, 'secrets/myVideo.mov')
 
 # Youtube API redirect uri.
 REDIRECT_URI = "http://127.0.0.1:8000/oauth2callback"

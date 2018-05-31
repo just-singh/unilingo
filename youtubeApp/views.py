@@ -46,13 +46,14 @@ def channel_stats_ajax(request):
     return JsonResponse(channel_json, safe=False)
 
 def upload_ajax(request):
+
     if 'credentials' not in request.session:
         return redirect(request.build_absolute_uri(reverse('authorize')))
     credentials = Credentials(**request.session['credentials'])
 
     client = build(
         API_SERVICE_NAME, API_VERSION, credentials=credentials)
-    upload_video(client)
+    upload_video(client, title, description, tags)
     return HttpResponse(status=200)
 
 
