@@ -62,7 +62,9 @@ def resumable_upload(request, resource, method):
       status, response = request.next_chunk()
       if response is not None:
         if method == 'insert' and 'id' in response:
+          print(response)
         elif method != 'insert' or 'id' not in response:
+          print(response)
         else:
           exit("The upload failed with an unexpected response: %s" % response)
     except HttpError, e:
@@ -75,6 +77,7 @@ def resumable_upload(request, resource, method):
       error = "A retriable error occurred: %s" % e
 
     if error is not None:
+      print error
       retry += 1
       if retry > MAX_RETRIES:
         exit("No longer attempting to retry.")
