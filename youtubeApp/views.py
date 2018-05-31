@@ -48,7 +48,6 @@ def channel_stats_ajax(request):
 def upload_ajax(request):
     if 'credentials' not in request.session:
         return redirect(request.build_absolute_uri(reverse('authorize')))
-    print request.session['credentials']
     credentials = Credentials(**request.session['credentials'])
 
     client = build(
