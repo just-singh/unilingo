@@ -136,10 +136,14 @@ class StatsView extends React.Component{
                           function(comment, index){
                           return (
                             <li key={ index } className="comment">
-                              <img src={comment.thumb}
-                                className="commentThumb"/>
-                              <span className="commentUsername">{ comment.name }
-                              </span>
+                              <div>
+                                <img src={comment.thumb}
+                                  className="commentThumb"/>
+                                <span className="commentUsername">
+                                  { comment.name }
+                                </span>
+
+                              </div>
                               <p>{comment.text}</p>
                             </li>
                           )})}
@@ -242,11 +246,6 @@ class UploadView extends React.Component{
 
         <button type="submit" className="btn btn-primary">Upload Video
         </button>
-
-        <p>{this.state.title}</p>
-        <p>{this.state.tags}</p>
-        <p>{this.state.description}</p>
-
       </form>
     )
   }
